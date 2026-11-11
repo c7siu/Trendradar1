@@ -1,8 +1,8 @@
-name: Hot News Crawler
+name: 立铠抖音舆情监控
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 */3 * * *'
 
 jobs:
   crawl:
@@ -11,19 +11,29 @@ jobs:
       EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
       EMAIL_TO: ${{ secrets.EMAIL_TO }}
+      EMAIL_SMTP_SERVER: "smtp.qq.com"
+      EMAIL_SMTP_PORT: "465"
     steps:
-      - name: Checkout code
+      - name: Checkout代码
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: 配置Python3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install uv
+      - name: 安装uv
         run: pip install uv
-      - name: Install dependencies
+      - name: 安装依赖
         run: uv sync
 
-      - name: Run TrendRadar爬虫推送
+      - name: 自动写入QQ邮箱配置
+        run: |
+          sed -i "s/^  from: \"\"/  from: \"$EMAIL_FROM\"/" config/config.yaml
+          sed -i "s/^  password: \"\"/  password: \"$EMAIL_PASSWORD\"/" config/config.yaml
+          sed -i "s/^  to: \"\"/  to: \"$EMAIL_TO\"/" config/config.yaml
+          sed -i "s/^  smtp_server: \"\"/  smtp_server: \"$EMAIL_SMTP_SERVER\"/" config/config.yaml
+          sed -i "s/^  smtp_port: \"\"/  smtp_port: \"$EMAIL_SMTP_PORT\"/" config/config.yaml
+
+      - name: 启动TrendRadar抓取抖音立铠舆情
         run: uv run -m trendradar
