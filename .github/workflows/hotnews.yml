@@ -25,5 +25,5 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Run TrendRadar
-        run: uv run python main.py
+      - name: Run TrendRadar爬虫推送
+        run: uv run -m trendradar
