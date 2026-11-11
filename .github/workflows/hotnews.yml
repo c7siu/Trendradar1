@@ -1,8 +1,8 @@
 name: Hot News Crawler
 on:
-  workflow_dispatch: # 允许手动点按钮测试（就是你要的测试推送）
+  workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *' # 定时每6小时跑一次，不影响手动测试
+    - cron: '0 */6 * * *'
 
 jobs:
   crawl:
@@ -20,11 +20,10 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install uv
+        run: pip install uv
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+        run: uv sync
 
       - name: Run TrendRadar
-        run: python main.py
-
+        run: uv run python main.py
