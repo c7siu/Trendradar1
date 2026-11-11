@@ -1,0 +1,30 @@
+name: Hot News Crawler
+on:
+  workflow_dispatch: # 允许手动点按钮测试（就是你要的测试推送）
+  schedule:
+    - cron: '0 */6 * * *' # 定时每6小时跑一次，不影响手动测试
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    env:
+      EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+      EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+      EMAIL_TO: ${{ secrets.EMAIL_TO }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run TrendRadar
+        run: python main.py
+
